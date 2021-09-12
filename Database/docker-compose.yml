@@ -1,6 +1,6 @@
-version: "3.9"  # optional since v1.27.0
+# version: "3.3"  # optional since v1.27.0
 services:
-  DB:
+  DataBase:
     container_name: Database
     image: mcr.microsoft.com/mssql/server:2019-latest
     logging:
