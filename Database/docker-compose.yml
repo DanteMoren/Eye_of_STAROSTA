@@ -1,21 +1,13 @@
-# version: "3.3"  # optional since v1.27.0
-services:
-  DataBase:
-    container_name: Database
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    logging:
-      driver: syslog
-      options:
-        tag: "docker/{{.Name}}{{.Name}}"
-    ports:
-      - "1433:1433"
-    enviroment:
-     - ACCEPT_EULA = Y
-     - SA_PASSWORD = Password123
-    volumes:
-      - mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
-    restart: always
-networks:
-  default:
-    external:
-      name: skynet
+server:
+  container_name: SQLite
+  command: socat TCP-L:12345,fork,reuseaddr EXEC:'sqlite3 /opt/sqlite/db',pty
+  build: .
+  volumes:
+  - /tmp/sqlitedbs:/opt/sqlite/db
+proxy:
+  command: socat TCP-L:12346,fork,reuseaddr TCP:sqliteserver:12345
+  build: .
+  links:
+  - server:sqliteserver
+  ports:
+  - 12346:12346
