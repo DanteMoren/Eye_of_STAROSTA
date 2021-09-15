@@ -1,5 +1,4 @@
 
-
 '''
 req_dict = {
     'week': None or 'now' or 'next',

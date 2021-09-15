@@ -3,8 +3,13 @@ import os
 import codecs
 import requests
 import datetime
+import sys
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+from Database.models import *
 
 def parse_timetable():
     """Parses the timetable from the MAI website with the specified parameters
@@ -56,11 +61,12 @@ def parse_timetable():
                 time_ = lesson_info.find('div', class_='sc-table-col sc-item-time').text
                 type_ = lesson_info.find('div', class_='sc-table-col sc-item-type').text
                 title = lesson_info.find('div', class_='sc-table-col sc-item-title').text.strip().split('\n\n')[0]
-                lesson = {'time':time_, 'type':type_, 'title':title}
+                location = lesson_info.find('div', class_='sc-table-col sc-item-location').text.strip()
+                if location == '':
+                    location = None
+                lesson = {'time': time_, 'type': type_, 'title': title, 'location': location}
                 lessons.append(lesson)
-            
             data['results'].append({'day_of_week': day_of_week, 'date': date, 'lessons': lessons})
-
         if count == 1:
             break
         new_url = url + str(count)
@@ -70,18 +76,8 @@ def parse_timetable():
     return data
 
 def add_timetable_to_db(data):
-    # print(data)
-    # try:
-    #     with connect(
-    #         host=SQL_HOST,
-    #         user=SQL_USER,
-    #         password=SQL_PASSWORD,
-    #         database=SQL_DB_NAME
-    #     ) as connection:
-    #         print(connection)
-    # except Error as e:
-    #     print(e)
     pass
 
 if __name__ == '__main__':
-    add_timetable_to_db(parse_timetable())
+    # add_timetable_to_db(parse_timetable())
+    pass

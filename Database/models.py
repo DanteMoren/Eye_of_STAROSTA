@@ -1,71 +1,78 @@
-import peewee
-import os
-from dotenv import load_dotenv
+from peewee import *
 
-load_dotenv()
-
-SQL_PASSWORD = os.getenv('SQL_PASSWORD')
-SQL_HOST = os.getenv('SQL_HOST')
-SQL_USER = os.getenv('SQL_USER')
-SQL_DB_NAME = os.getenv('SQL_DB_NAME')
-SQL_PORT = int(os.getenv('SQL_PORT'))
-
-try:
-    with peewee.MySQLDatabase(
-        'timetable',
-        user=SQL_USER,
-        password=SQL_PASSWORD,
-        host=SQL_HOST,
-        port=SQL_PORT
-    ) as connection:
-        cursor = connection.cursor()
-except Exception as e:
-    raise Exception
+db =  SqliteDatabase('./Database/DB/database.db')
 
 
-class BaseModel(peewee.Model):
+class BaseModel(Model):
+
     class Meta:
-        database = connection
+        database = db
 
 
 class Day(BaseModel):
-    day_of_week = peewee.TextField(
-        column_name='Day_of_week',
-        null=True
+    day_of_week = TextField()
+    date = TextField(
+        primary_key=True
     )
-    date = peewee.CharField(
-        primary_key=True,
-        column_name='Date',
-        null=False
-    )
-    homework = peewee.BooleanField(
-        column_name='Homework',
-        null=True,
+    homework = BooleanField(
         default=False
     )
+    class Meta:
+        db_table = 'Days'
 
 
 class Homework(BaseModel):
-    day = peewee.ForeignKeyField(
+    day = ForeignKeyField(
         model=Day,
-        related_name='Date',
-        null=False
+        to_field='date'
     )
-    lesson = peewee.TextField(
-        column_name='Lesson',
-        null=False
-    )
-    homework = peewee.TextField(
-        column_name='Homework',
-        null=True,
-    )
-    Location = peewee.TextField(
-        column_name='Location',
+    lesson_title = TextField()
+    lesson_time = TextField()
+    lesson_type = TextField()
+    homework = TextField(
         null=True
     )
-
+    location = TextField(
+        null=True
+    )
     class Meta:
-        constraints = [peewee.SQL('UNIQUE (date, lesson)')]
+        db_table = 'Homeworks'
+        primary_key = CompositeKey('day', 'lesson_title')
 
-Homework.create_table()
-Day.create_table()
+def add_day(data):
+    """add day and lessons in database
+
+    Args:
+        data (dict):
+                {
+                    'day_of_week': 'Ср',
+                    'date': '01.09.2021',
+                    'lessons': [
+                        {'time': '10:45 – 12:15', 'type': 'ПЗ ', 'title': 'Физическая культура (спортивные секции)', 'location': None},
+                        {'time': '14:45 – 16:15', 'type': 'ПЗ ', 'title': 'Иностранный язык', 'location': 'LMS'}]
+                }
+    """
+    try:
+        day = Day.create(
+            date=data.get('date'),
+            day_of_week=data.get('day_of_week'),
+            homework=False
+        )
+        for lesson in data.get('lessons'):
+            Homework.create(
+                day=day,
+                lesson_title=lesson.get('lesson_title'),
+                lesson_time=lesson.get('lesson_time'),
+                lesson_type=lesson.get('lesson_type'),
+                homework=None,
+                location=lesson.get('location')
+            )
+    except:
+        pass
+
+def add_homework(data):
+    pass
+
+if __name__ == '__main__':
+    with db:
+        db.drop_tables([Day, Homework])
