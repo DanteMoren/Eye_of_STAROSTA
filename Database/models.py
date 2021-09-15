@@ -23,12 +23,13 @@ class Day(BaseModel):
 
 class Homework(BaseModel):
     day = ForeignKeyField(
+        column_name='date',
         model=Day,
         to_field='date'
     )
     lesson_title = TextField()
     lesson_time = TextField()
-    lesson_type = TextField()
+    lesson_type = CharField()
     homework = TextField(
         null=True
     )
@@ -37,7 +38,7 @@ class Homework(BaseModel):
     )
     class Meta:
         db_table = 'Homeworks'
-        primary_key = CompositeKey('day', 'lesson_title')
+        primary_key = CompositeKey('day', 'lesson_title', 'lesson_time')
 
 def add_day(data):
     """add day and lessons in database
@@ -61,14 +62,38 @@ def add_day(data):
         for lesson in data.get('lessons'):
             Homework.create(
                 day=day,
-                lesson_title=lesson.get('lesson_title'),
-                lesson_time=lesson.get('lesson_time'),
-                lesson_type=lesson.get('lesson_type'),
+                lesson_title=lesson.get('title'),
+                lesson_time=lesson.get('time'),
+                lesson_type=lesson.get('type'),
                 homework=None,
                 location=lesson.get('location')
             )
-    except:
-        pass
+    except IntegrityError as e:
+        day = Day.get(
+            date=data.get('date'),
+            day_of_week=data.get('day_of_week')
+        )
+        update_day(day, data)
+    except Exception as e:
+        print(e)
+
+# TODO понять как обновлять эту хуйню
+
+def update_day(day, data):
+    day = Day.get(
+        date=data.get('date'),
+        day_of_week=data.get('day_of_week')
+    )
+    for lesson in data.get('lessons'):
+        homework = Homework.update(
+            {
+                Homework.lesson_type:'test',
+                Homework.homework:None,
+                Homework.location:lesson.get('location')
+            }
+        ).where(Homework.date==day.date)
+        homework.execute()
+    print('запись обновлена')
 
 def add_homework(data):
     pass
@@ -76,3 +101,4 @@ def add_homework(data):
 if __name__ == '__main__':
     with db:
         db.drop_tables([Day, Homework])
+        db.create_tables([Day, Homework])

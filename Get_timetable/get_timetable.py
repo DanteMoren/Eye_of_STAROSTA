@@ -25,9 +25,11 @@ def parse_timetable():
         'Accept': '*/*',
         'User-Agent': f'{useragent.random}'
     }
-    data = {'results':[]}
+    data = []
 
-    url = 'https://mai.ru/education/schedule/detail.php?group=' + group_number + '&week='
+    url = ('https://mai.ru/education/schedule/detail.php?group='
+        + group_number +
+        '&week=')
 
     count = 1
     new_url = url + str(count)
@@ -36,8 +38,7 @@ def parse_timetable():
     soup = BeautifulSoup(req.text, 'lxml')
     year = datetime.datetime.now().year
 
-    while soup.find('span', class_='sc-day') != None:
-
+    while soup.find('span', class_='sc-day') is not None:
         days = soup.find_all('div', class_='sc-table sc-table-day')
 
         for day in days:
@@ -45,39 +46,72 @@ def parse_timetable():
                 'div',
                 class_='sc-table-col sc-day-header sc-gray'
             )
-            if day_block == None:
+            if day_block is None:
                 day_block = day.find(
-                'div',
-                class_='sc-table-col sc-day-header sc-blue'
-            )
+                    'div',
+                    class_='sc-table-col sc-day-header sc-blue'
+                )
             day_of_week = day_block.text[-2::]
 
             date = day_block.text[:-2:] + f'.{year}'
 
-            lessons_in_day = day.find('div', class_='sc-table-row').find_all('div', class_='sc-table-row')
+            lessons_in_day = day.find(
+                'div',
+                class_='sc-table-row'
+            ).find_all('div', class_='sc-table-row')
 
             lessons = []
+
             for lesson_info in lessons_in_day:
-                time_ = lesson_info.find('div', class_='sc-table-col sc-item-time').text
-                type_ = lesson_info.find('div', class_='sc-table-col sc-item-type').text
-                title = lesson_info.find('div', class_='sc-table-col sc-item-title').text.strip().split('\n\n')[0]
-                location = lesson_info.find('div', class_='sc-table-col sc-item-location').text.strip()
+                time_ = lesson_info.find(
+                    'div',
+                    class_='sc-table-col sc-item-time'
+                ).text
+
+                type_ = lesson_info.find(
+                    'div',
+                    class_='sc-table-col sc-item-type'
+                ).text
+
+                title = lesson_info.find(
+                    'div',
+                    class_='sc-table-col sc-item-title'
+                ).text.strip().split('\n\n')[0]
+
+                location = lesson_info.find_all(
+                    'div',
+                    class_='sc-table-col sc-item-location'
+                )[1].text.strip()
+
                 if location == '':
                     location = None
-                lesson = {'time': time_, 'type': type_, 'title': title, 'location': location}
+                lesson = {
+                              'time': time_,
+                              'type': type_,
+                              'title': title,
+                              'location': location
+                    }
                 lessons.append(lesson)
-            data['results'].append({'day_of_week': day_of_week, 'date': date, 'lessons': lessons})
-        if count == 1:
-            break
-        new_url = url + str(count)
+            data.append(
+                {
+                    'day_of_week': day_of_week,
+                    'date': date,
+                    'lessons': lessons
+                    }
+            )
+        # if count == 2:
+        #     break
         count += 1
+        new_url = url + str(count)
         req = requests.get(new_url, headers=headers)
         soup = BeautifulSoup(req.text, 'lxml')
     return data
 
+
 def add_timetable_to_db(data):
-    pass
+    for day in data:
+        add_day(day)
+
 
 if __name__ == '__main__':
-    # add_timetable_to_db(parse_timetable())
-    pass
+    add_timetable_to_db(parse_timetable())
