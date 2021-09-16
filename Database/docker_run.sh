@@ -1,6 +1,5 @@
 #!/bin/bash
 
-sudo touch ~/database.db
 
 sudo docker run \
 -it \
