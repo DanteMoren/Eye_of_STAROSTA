@@ -9,7 +9,8 @@ from bs4 import BeautifulSoup
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from Database.models import *
+from Database.models import add_day
+
 
 def parse_timetable():
     """Parses the timetable from the MAI website with the specified parameters
@@ -28,8 +29,8 @@ def parse_timetable():
     data = []
 
     url = ('https://mai.ru/education/schedule/detail.php?group='
-        + group_number +
-        '&week=')
+           + group_number +
+           '&week=')
 
     count = 1
     new_url = url + str(count)

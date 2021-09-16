@@ -1,10 +1,10 @@
 <mxfile host="65bd71144e">
     <diagram id="_9ytG60nKZu2OOi8pl9j" name="Страница 1">
-        <mxGraphModel dx="708" dy="567" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="894" dy="662" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.004;entryY=0.216;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;dashed=1;" edge="1" parent="1" source="7" target="14">
+                <mxCell id="18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.013;entryY=0.138;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;dashed=1;" edge="1" parent="1" source="7" target="14">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.002;entryY=0.22;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;exitX=-0.007;exitY=0.33;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="7" target="9">
@@ -12,7 +12,7 @@
                         <mxPoint x="414" y="140" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="7" value="&lt;ul&gt;&lt;li&gt;&lt;span&gt;День&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;№ Пары&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;№ Дисциплины&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Тип занятия&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Задание&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+                <mxCell id="7" value="&lt;ul&gt;&lt;li&gt;&lt;span&gt;День&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;№ Пары&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Имя предмета&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Тип занятия&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Задание&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
                     <mxGeometry x="414" y="100" width="176" height="110" as="geometry"/>
                 </mxCell>
                 <mxCell id="8" value="Расписание" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
@@ -24,11 +24,22 @@
                 <mxCell id="10" value="Пары" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
                     <mxGeometry x="200" y="150" width="150" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="14" value="&lt;ul&gt;&lt;li&gt;№ Дисциплины&lt;/li&gt;&lt;li&gt;Преподаватель&lt;/li&gt;&lt;li&gt;Место проведения&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
-                    <mxGeometry x="654" y="180" width="173" height="70" as="geometry"/>
+                <mxCell id="14" value="&lt;ul&gt;&lt;li&gt;Имя предмета&lt;/li&gt;&lt;li&gt;Тип занятия&lt;/li&gt;&lt;li&gt;Преподаватель&lt;/li&gt;&lt;li&gt;Место проведения&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+                    <mxGeometry x="654" y="180" width="173" height="90" as="geometry"/>
                 </mxCell>
-                <mxCell id="15" value="Дисциплины" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+                <mxCell id="15" value="Предметы" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
                     <mxGeometry x="654" y="150" width="173" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="592" y="180" as="sourcePoint"/>
+                        <mxPoint x="654" y="220" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="610" y="180"/>
+                            <mxPoint x="610" y="220"/>
+                            <mxPoint x="654" y="220"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
             </root>
         </mxGraphModel>

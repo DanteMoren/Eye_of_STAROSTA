@@ -28,4 +28,3 @@ class TestTimetableParser:
         day = soup.find('span', class_='sc-day')
         
         assert day != None, ('The written group does not exist, check group_number in config.cfg')
-

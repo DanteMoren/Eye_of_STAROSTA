@@ -1,6 +1,6 @@
 from peewee import *
 
-db =  SqliteDatabase('./Database/DB/database.db')
+db = SqliteDatabase('./Database/~/database.db')
 
 
 class BaseModel(Model):
@@ -17,6 +17,7 @@ class Day(BaseModel):
     homework = BooleanField(
         default=False
     )
+
     class Meta:
         db_table = 'Days'
 
@@ -36,9 +37,11 @@ class Homework(BaseModel):
     location = TextField(
         null=True
     )
+
     class Meta:
         db_table = 'Homeworks'
         primary_key = CompositeKey('day', 'lesson_title', 'lesson_time')
+
 
 def add_day(data):
     """add day and lessons in database
@@ -49,8 +52,18 @@ def add_day(data):
                     'day_of_week': 'Ср',
                     'date': '01.09.2021',
                     'lessons': [
-                        {'time': '10:45 – 12:15', 'type': 'ПЗ ', 'title': 'Физическая культура (спортивные секции)', 'location': None},
-                        {'time': '14:45 – 16:15', 'type': 'ПЗ ', 'title': 'Иностранный язык', 'location': 'LMS'}]
+                        {
+                            'time': '10:45 – 12:15',
+                            'type': 'ПЗ ',
+                            'title': 'Физическая культура (спортивные секции)',
+                            'location': None
+                        },
+                        {
+                            'time': '14:45 – 16:15',
+                            'type': 'ПЗ ',
+                            'title': 'Иностранный язык',
+                            'location': 'LMS'
+                        }]
                 }
     """
     try:
@@ -68,7 +81,7 @@ def add_day(data):
                 homework=None,
                 location=lesson.get('location')
             )
-    except IntegrityError as e:
+    except IntegrityError:
         day = Day.get(
             date=data.get('date'),
             day_of_week=data.get('day_of_week')
@@ -79,6 +92,7 @@ def add_day(data):
 
 # TODO понять как обновлять эту хуйню
 
+
 def update_day(day, data):
     day = Day.get(
         date=data.get('date'),
@@ -87,16 +101,18 @@ def update_day(day, data):
     for lesson in data.get('lessons'):
         homework = Homework.update(
             {
-                Homework.lesson_type:'test',
-                Homework.homework:None,
-                Homework.location:lesson.get('location')
+                Homework.lesson_type: 'test',
+                Homework.homework: None,
+                Homework.location: lesson.get('location')
             }
-        ).where(Homework.date==day.date)
+        ).where(Homework.date == day.date)
         homework.execute()
     print('запись обновлена')
 
+
 def add_homework(data):
     pass
+
 
 if __name__ == '__main__':
     with db:
