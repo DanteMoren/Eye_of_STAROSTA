@@ -4,6 +4,7 @@ import codecs
 import requests
 import datetime
 import sys
+import json
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 
@@ -72,7 +73,7 @@ def parse_timetable():
                 type_ = lesson_info.find(
                     'div',
                     class_='sc-table-col sc-item-type'
-                ).text
+                ).text.strip()
 
                 title = lesson_info.find(
                     'div',
@@ -90,7 +91,8 @@ def parse_timetable():
                               'time': time_,
                               'type': type_,
                               'title': title,
-                              'location': location
+                              'location': location,
+                              'teacher': None
                     }
                 lessons.append(lesson)
             data.append(
@@ -106,6 +108,8 @@ def parse_timetable():
         new_url = url + str(count)
         req = requests.get(new_url, headers=headers)
         soup = BeautifulSoup(req.text, 'lxml')
+    with open('Get_timetable/data.json', 'w', encoding='utf-8') as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
     return data
 
 
