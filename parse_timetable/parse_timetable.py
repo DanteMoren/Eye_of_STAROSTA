@@ -41,6 +41,7 @@ def parse_timetable():
     year = datetime.datetime.now().year
 
     while soup.find('span', class_='sc-day') is not None:
+        print('...')
         days = soup.find_all('div', class_='sc-table sc-table-day')
 
         for day in days:
@@ -95,6 +96,7 @@ def parse_timetable():
                               'teacher': None
                     }
                 lessons.append(lesson)
+            print(date)
             data.append(
                 {
                     'day_of_week': day_of_week,
@@ -102,14 +104,14 @@ def parse_timetable():
                     'lessons': lessons
                     }
             )
-        # if count == 2:
+        # if count == 3:
         #     break
         count += 1
         new_url = url + str(count)
         req = requests.get(new_url, headers=headers)
         soup = BeautifulSoup(req.text, 'lxml')
-    with open('Get_timetable/data.json', 'w', encoding='utf-8') as file:
-        json.dump(data, file, indent=4, ensure_ascii=False)
+    # with open('parse_timetable/data.json', 'w', encoding='utf-8') as file:
+    #     json.dump(data, file, indent=4, ensure_ascii=False)
     return data
 
 
