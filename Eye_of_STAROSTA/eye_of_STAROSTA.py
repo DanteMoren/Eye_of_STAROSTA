@@ -164,6 +164,9 @@ def get_timetable_by_next_week():
         week_day += datetime.timedelta(days=1)
     return week_day
 
+def get_timetable_by_day_of_week(day_of_week):
+    pass
+
 
 def get_timetable(req_data):
     timetable = {}
@@ -180,6 +183,8 @@ def get_timetable(req_data):
         return get_timetable_by_date(req_data.get('date'))
     elif req_data.get('today'):
         return get_timetable_today()
+    elif req_data.get('day_of_week'):
+        return get_timetable_by_day_of_week(req_data.get('day_of_week'))
     else:
         print('SOME ERROR')  # TODO припилить логи
 
@@ -187,8 +192,9 @@ def get_timetable(req_data):
 if __name__ == '__main__':
     req_dict = {
         'week': 0,
-        'date': 0,
-        'today': 1
+        'date': '12.10.2021',
+        'today': 0,
+        'day_of_week': 0
     }
     data = get_timetable(req_dict)
     with open('eye_of_STAROSTA/data.json', 'w', encoding='utf-8') as file:
