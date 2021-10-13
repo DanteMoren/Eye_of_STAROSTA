@@ -30,15 +30,23 @@ def parse_homework():
     }
 
     req = requests.get(url, headers=headers, params=params)
+    if req.status_code != 200:
+        print('ОНО НАЕБНУЛОСЬ')  # TODO сделать ошибку
+        return
+
 
     posts = req.json()
-    for post in posts['response']['items'][1:5:]:
-        if '#ДЗ@m3o_19bk_19' in post.get('text'):
-            print(post.get('text'))
+    print(posts)
+    for post in posts:
+        print(post)
+        # if '#ДЗ@m3o_19bk_19' in post.get('text'):
+        #     print(post.get('text'))
     # with codecs.open('vk_page.json', 'w', "utf-8") as file:
     #     file.write(req.text)
 
 def add_homework(data):
     pass
 
-parse_homework()
+
+if __name__ == '__main__':
+    parse_homework()
