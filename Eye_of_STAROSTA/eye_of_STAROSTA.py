@@ -7,9 +7,7 @@ import random
 import time
 
 vk_session = vk_api.VkApi(token=m_token)
-
 session_api = vk_session.get_api()
-
 longpoll = VkLongPoll(vk_session)
 
 
@@ -20,20 +18,26 @@ def create_keyboard(msg):
 
         keyboard.add_button('Расписание занятий',
                             color=VkKeyboardColor.PRIMARY)
+        keyboard.add_line()
         keyboard.add_button('Ближайшие задания',
                             color=VkKeyboardColor.PRIMARY)
 
         keyboard.add_line()
-        keyboard.add_button('Вернутся в меню', color=VkKeyboardColor.PRIMARY)
         keyboard.add_button('Вырубить бота нахуй',
                             color=VkKeyboardColor.PRIMARY)
 
     elif msg == 'привет' or msg == "начать":
-        keyboard.add_button('Открыть меню', color=VkKeyboardColor.PRIMARY )
+        keyboard.add_button('Открыть меню', color=VkKeyboardColor.PRIMARY)
 
-    elif msg == 'закрыть':
-        print('закрываем клаву')
-        return keyboard.get_empty_keyboard()
+    elif msg == 'расписание занятий':
+        keyboard.add_button('Пары сегодня', color=VkKeyboardColor.PRIMARY)
+        keyboard.add_button('Расписание недели', color=VkKeyboardColor.PRIMARY)
+        keyboard.add_line()
+        keyboard.add_button('Ближайшие пз', color=VkKeyboardColor.PRIMARY)
+        keyboard.add_button('Ближайшие лабы', color=VkKeyboardColor.PRIMARY)
+        keyboard.add_line()
+        keyboard.add_button('Вернутся в меню', color=VkKeyboardColor.PRIMARY)
+
     else:
         return keyboard.get_empty_keyboard()
 
@@ -64,13 +68,13 @@ for event in longpoll.listen():
             elif msg == "открыть меню":
                 send_message(vk_session, 'user_id', event.user_id,
                              message='Учебное меню', keyboard=keyboard)
+            elif msg == 'расписание занятий':
+                send_message(vk_session, 'user_id', event.user_id,
+                             message='.', keyboard=keyboard)
             elif msg == 'вырубить бота нахуй':
                 send_message(vk_session, 'user_id', event.user_id,
                              message='ВЫРУБАЮСЬ НАХУЙ!')
                 exit(-1)
-            elif msg == 'закрыть':
-                send_message(vk_session, 'user_id', event.user_id,
-                             message='Закрыть', keyboard=keyboard)
 
         elif event.from_chat:
             if msg == "привет":
