@@ -37,8 +37,8 @@ def parse_homework():
 
     posts = req.json()
     print(posts)
-    for post in posts:
-        print(post)
+    # for post in posts:
+    #     print(post)
         # if '#ДЗ@m3o_19bk_19' in post.get('text'):
         #     print(post.get('text'))
     # with codecs.open('vk_page.json', 'w', "utf-8") as file:
