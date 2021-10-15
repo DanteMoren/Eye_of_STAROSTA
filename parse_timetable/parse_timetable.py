@@ -110,8 +110,8 @@ def parse_timetable():
         new_url = url + str(count)
         req = requests.get(new_url, headers=headers)
         soup = BeautifulSoup(req.text, 'lxml')
-    # with open('parse_timetable/data.json', 'w', encoding='utf-8') as file:
-    #     json.dump(data, file, indent=4, ensure_ascii=False)
+    with open('parse_timetable/timetable.json', 'w', encoding='utf-8') as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
     return data
 
 
@@ -121,4 +121,6 @@ def add_timetable_to_db(data):
 
 
 if __name__ == '__main__':
-    add_timetable_to_db(parse_timetable())
+    with open('parse_timetable/timetable.json', 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    add_timetable_to_db(data)

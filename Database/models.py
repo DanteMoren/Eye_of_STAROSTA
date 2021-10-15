@@ -1,3 +1,4 @@
+from re import sub
 from peewee import *
 import configparser
 import codecs
@@ -88,17 +89,24 @@ class File(BaseModel):
     )
 
     verbose_name = TextField(
-        null=True
+        null=True,
+        default=None
     )
 
-    homework = ForeignKeyField(
-        model=Day,
-        to_field='homework',
-        column_name='homework'
+    homework_date = DateField(
+        formats='%Y-%m-%d',
+        null=True,
+        default=None
     )
 
     subject_title = CharField(
-        null=True
+        null=True,
+        default=None
+    )
+
+    couple_type = CharField(
+        null=True,
+        default=None
     )
 
     link = TextField()
@@ -112,6 +120,21 @@ def convert_str_to_time(str_time):
     return(time_)
 
 
+def convert_date(date):
+    if type(date) is str:
+        try:
+            date = datetime.datetime.strptime(
+                date, '%d.%m.%Y').date()
+            return date
+        except:
+            date = datetime.datetime.strptime(
+                date, '%Y-%m-%d').date()
+            return date
+    if type(date) == datetime.datetime:
+        return date.date()
+    print('SOME ERROR')  # TODO припилить логи
+
+
 def create_or_update_subject(title, type, teacher=None, location=None):
     subject = Subject.get_or_create(subject_title=title, couple_type=type)
     if teacher is None:
@@ -123,7 +146,8 @@ def create_or_update_subject(title, type, teacher=None, location=None):
         location=location
     ).where(Subject.subject_title == title, Subject.couple_type == type)
     updated_subject.execute()
-    subject = Subject.get(Subject.subject_title==title, Subject.couple_type==type)
+    subject = Subject.get(Subject.subject_title == title,
+                          Subject.couple_type == type)
     return(subject)
 
 
@@ -162,7 +186,8 @@ def add_day(data):
                 {
                     'day_of_week': 'Ср',
                     'date': '01.09.2021',
-                    'lessons': [
+                    'lessons': 
+                    [
                         {
                             'time': '10:45 – 12:15',
                             'type': 'ПЗ ',
@@ -175,7 +200,8 @@ def add_day(data):
                             'type': 'ПЗ ',
                             'title': 'Иностранный язык',
                             'location': 'LMS'
-                        }]
+                        }
+                    ]
                 }
     """
 
@@ -201,25 +227,78 @@ def add_day(data):
 # ! TODO понять как обновлять эту хуйню
 
 
-# def update_day(day, data):
-#     day = Day.get(
-#         date=data.get('date'),
-#         day_of_week=data.get('day_of_week')
-#     )
-#     for lesson in data.get('lessons'):
-#         homework = Homework.update(
-#             {
-#                 Homework.lesson_type: 'test',
-#                 Homework.homework: None,
-#                 Homework.location: lesson.get('location')
-#             }
-#         ).where(Homework.date == day.date)
-#         homework.execute()
-#     print('запись обновлена')
-
-
 def add_homework(data):
-    pass
+    """add homework to database
+
+    Args:
+        data (dict):
+        {
+            "files": 
+                [
+                    {
+                        "name": "Задание на семинар №1.doc",
+                        "link": "https://vk.com/doc316529256"
+                    }
+                ],
+            "title": "Социология",
+            "type": "ПЗ",
+            "homework": "1. Астахов\n2. Альбиков\n3. Черкашин\n4. Мухамедшинов\n5. Колодяжный",
+            "date": "25.09.2021"
+        }
+    """
+
+    try:
+        date = convert_date(data.get('date'))
+        homework = data['homework']
+        subject_title = data['title']
+        couple_type = data['type']
+        day = Day.select().where(
+            Day.date == date,
+            Day.subject_title == subject_title,
+            Day.couple_type == couple_type).get()
+        day_of_week = day.day_of_week
+        couple_number = day.couple_number
+        create_or_update_day(date, day_of_week, couple_number,
+                             subject_title, couple_type, homework)
+        for file in data.get('files'):
+            add_file(
+                file_name=file['name'],
+                link=file['link'],
+                homework_date=data['date'],
+                subject_title=data['title'],
+                couple_type=data['type']
+            )
+    except Exception as e:
+        print(e)
+
+
+def add_file(file_name, link, verbose_name=None, homework_date=None, subject_title=None, couple_type=None):
+    homework_date = convert_date(homework_date)
+    try:
+        file = File.get_or_create(
+            file_name=file_name,
+            link=link
+        )
+        if verbose_name is None:
+            verbose_name = file[0].verbose_name
+        if homework_date is None:
+            homework_date = file[0].homework_date
+        if subject_title is None:
+            subject_title = file[0].subject_title
+        if couple_type is None:
+            couple_type = file[0].couple_type
+        updated_file = File.update(
+            verbose_name=verbose_name,
+            homework_date=homework_date,
+            subject_title=subject_title,
+            couple_type=couple_type
+        ).where(File.file_name == file_name, File.link == link)
+        updated_file.execute()
+        file = File.get(File.file_name == file_name, File.link == link)
+
+        return file
+    except Exception as e:
+        print('www')
 
 
 if __name__ == '__main__':
@@ -237,16 +316,3 @@ if __name__ == '__main__':
             couple_start=start_time,
             couple_end=end_time
         )
-    # data = {
-    #                 "day_of_week": "Вт",
-    #     "date": "21.09.2021",
-    #     "lessons": [
-    #         {
-    #             "time": "09:00 – 10:30",
-    #             "type": "ЛК",
-    #             "title": "Военная подготовка",
-    #             "location": "ПЛАЦ",
-    #             "teacher": 'МАРСЕЛЬ'
-    #         },]
-    #             }
-    # add_day(data)
