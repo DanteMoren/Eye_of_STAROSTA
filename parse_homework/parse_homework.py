@@ -1,12 +1,56 @@
 import configparser
 import os
 import requests
-from fake_useragent import UserAgent
 import codecs
+import re
+import sys
+from fake_useragent import UserAgent
 from dotenv import load_dotenv
 
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+from Database.models import add_homework
+
+subject_title_list = [
+    'Иностранный_язык', 'Архитектуры_вычислительных_систем',
+    'Основы_психологии', 'Конструирование_программного_обеспечения',
+    'Вычислительная_математика', 'Экономика',
+    'Математическое_программирование', 'Теория_игр_и_методы_принятия_решений',
+    'Аналитическое_моделирование', 'Социология',
+    'Обработка_экспериментальных_данных_на_ЭВМ'
+]
+
+
+def get_homework_data(text):
+    homework = re.search(r'\n[^#]+', text)[0]
+    homework = re.sub(
+        r'(\d{2}\.\d{2}\.\d{4})|(\d{2}\.\d{2}\.\d{2})', '', homework
+    ).strip()
+    date = re.search(r'(\d{2}\.\d{2}\.\d{4})|(\d{2}\.\d{2}\.\d{2})', text)
+    for title in subject_title_list:
+        subject_title = re.search(title, text)
+        if subject_title:
+            couple_type = text[subject_title.end()+1:subject_title.end()+3]
+            subject_title = re.sub('_', ' ', subject_title[0])
+            break
+
+    if date and subject_title:
+        if re.search(r'(^\d{2}\.\d{2}\.\d{2}$)', date[0]):
+            date = date[0][:6] + '20' + date[0][6:]
+        else:
+            date = date[0]
+        return {
+            'title': subject_title,
+            'type': couple_type,
+            'homework': homework,
+            'date': date
+        }
+    #  TODO накинуть логи
+    return {}
+
+
 def parse_homework():
-    
+
     load_dotenv()
     VK_ACCESS_TOKEN = os.getenv('VK_ACCESS_TOKEN')
 
@@ -34,19 +78,38 @@ def parse_homework():
         print('ОНО НАЕБНУЛОСЬ')  # TODO сделать ошибку
         return
 
+    posts = req.json()['response']['items'][1:10]
 
-    posts = req.json()
-    print(posts)
+    homework = []
     for post in posts:
-        print(post)
-        # if '#ДЗ@m3o_19bk_19' in post.get('text'):
-        #     print(post.get('text'))
-    # with codecs.open('vk_page.json', 'w', "utf-8") as file:
-    #     file.write(req.text)
+        if '#ДЗ@m3o_19bk_19' in post.get('text'):
+            files = []
+            attachments = post.get('attachments')
+            if attachments:
+                for attach in post.get('attachments'):
+                    if attach['type'] == 'photo':
+                        link = attach['photo']['sizes'][-1]['url']
+                        name = str(attach['photo']['id'])
+                        files.append({'name': name, 'link': link})
+                    elif attach['type'] == 'doc':
+                        link = attach['doc']['url']
+                        name = attach['doc']['title']
+                        files.append({'name': name, 'link': link})
 
-def add_homework(data):
-    pass
+            data = {
+                'files': files
+            }
+            data.update(get_homework_data(post.get('text')))
+            # проверка на наличие правильного заголовка и даты
+            try:
+                if data.get('title') and data.get('date'):
+                    homework.append(data)
+            except KeyError:
+                continue
+    return homework
 
 
 if __name__ == '__main__':
-    parse_homework()
+    data = parse_homework()
+    for homework in data:
+        add_homework(homework)
