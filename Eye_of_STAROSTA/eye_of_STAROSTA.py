@@ -35,20 +35,17 @@ def create_keyboard(msg):
 
         keyboard.add_button('Расписание занятий',
                             color=VkKeyboardColor.PRIMARY)
+        keyboard.add_line()
         keyboard.add_button('Ближайшие задания',
                             color=VkKeyboardColor.PRIMARY)
 
         keyboard.add_line()
-        keyboard.add_button('Вернутся в меню', color=VkKeyboardColor.PRIMARY)
         keyboard.add_button('Вырубить бота нахуй',
                             color=VkKeyboardColor.PRIMARY)
 
     elif msg == 'привет' or msg == "начать":
         keyboard.add_button('Открыть меню', color=VkKeyboardColor.PRIMARY)
 
-    elif msg == 'закрыть':
-        print('закрываем клаву')
-        return keyboard.get_empty_keyboard()
     else:
         return keyboard.get_empty_keyboard()
 
