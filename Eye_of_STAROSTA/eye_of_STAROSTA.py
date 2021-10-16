@@ -170,7 +170,7 @@ def get_homework_by_date(date):
     """Get homework by date from html req_data
 
     Args:
-        date (str)
+        date (str) 
     """
     date = convert_date(date)
     homework = Day.select().where(Day.date == date, Day.homework != None)
