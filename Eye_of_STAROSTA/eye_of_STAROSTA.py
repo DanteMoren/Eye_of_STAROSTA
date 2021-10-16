@@ -10,20 +10,17 @@ from peewee import *
 from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
- 
+
 from vk_api.bot_longpoll import VkBotLongPoll
 from vk_api.bot_longpoll import VkBotEventType
+from vk_api.vk_api import VkApiMethod
+
+from parse_messages import parse_message
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from Database.models import Day, File
 
-
-# vk_session = VkApi(token='b427d2f68643c70505241dbcee1b2366e61eda1d9b6ad68f9bc2af2b31d7d0750775ac83c5a2070c811f1')
-
-# session_api = vk_session.get_api()
-
-# longpoll = VkLongPoll(vk_session)
 
 config = configparser.RawConfigParser()
 config.read_file(codecs.open(os.path.abspath('config.cfg'), "r", "utf8"))
@@ -33,79 +30,11 @@ db_dir = config.get('database', 'dir')
 db = SqliteDatabase(db_dir)
 
 
-def create_keyboard(msg):
-    keyboard = VkKeyboard(one_time=False)
-
-    if msg == 'открыть меню' or msg == "вернутся в меню":
-
-        keyboard.add_button('Расписание занятий',
-                            color=VkKeyboardColor.PRIMARY)
-        keyboard.add_line()
-        keyboard.add_button('Ближайшие задания',
-                            color=VkKeyboardColor.PRIMARY)
-
-        keyboard.add_line()
-        keyboard.add_button('Вырубить бота нахуй',
-                            color=VkKeyboardColor.PRIMARY)
-
-    elif msg == 'привет' or msg == "начать":
-        keyboard.add_button('Открыть меню', color=VkKeyboardColor.PRIMARY)
-
-    else:
-        return keyboard.get_empty_keyboard()
-
-    keyboard = keyboard.get_keyboard()
-    return keyboard
+# def send_message(vk_session, id_type, id, message=None, attachment=None, keyboard=None):
+#     vk_session.method('messages.send', {id_type: id, 'message': message, 'random_id': random.randint(
+#         -2147483648, +2147483648), "attachment": attachment, 'keyboard': keyboard})
 
 
-def send_message(vk_session, id_type, id, message=None, attachment=None, keyboard=None):
-    vk_session.method('messages.send', {id_type: id, 'message': message, 'random_id': random.randint(
-        -2147483648, +2147483648), "attachment": attachment, 'keyboard': keyboard})
-
-
-# def char():
-#     for event in longpoll.listen():
-#         if event.type == VkEventType.MESSAGE_NEW:
-#             msg = event.text.lower()
-#             keyboard = create_keyboard(msg)
-
-#             if event.from_user and not event.from_me:
-#                 print('Сообщение пришло в: ' +
-#                     str(datetime.strftime(datetime.now(), "%H:%M:%S")))
-#                 print('Текст сообщения: ' + str(event.text))
-#                 print('ID пользователя: ' + str(event.user_id))
-#                 print('-' * 30)
-
-#                 if msg == "привет" or msg == "вернутся в меню" or msg == "начать":
-#                     send_message(vk_session, 'user_id', event.user_id,
-#                                 message='Вас приветствует учебный бот группы М3О-19Бк-19!', keyboard=keyboard)
-#                 elif msg == "открыть меню":
-#                     send_message(vk_session, 'user_id', event.user_id,
-#                                 message='Учебное меню', keyboard=keyboard)
-#                 elif msg == 'вырубить бота нахуй':
-#                     send_message(vk_session, 'user_id', event.user_id,
-#                                 message='ВЫРУБАЮСЬ НАХУЙ!')
-#                     exit(-1)
-#                 elif msg == 'закрыть':
-#                     send_message(vk_session, 'user_id', event.user_id,
-#                                 message='Закрыть', keyboard=keyboard)
-
-#             elif event.from_chat:
-#                 if msg == "привет":
-#                     send_message(vk_session, 'chat_id',
-#                                 event.chat_id, message='Привет!')
-
-def group_msg():
-    while True:
-        vk = VkApi(token='b427d2f68643c70505241dbcee1b2366e61eda1d9b6ad68f9bc2af2b31d7d0750775ac83c5a2070c811f1')
-        long_poll = VkBotLongPoll(vk, 186214698)
-        vk_api = vk.get_api()
-        try:    
-            for event in long_poll.listen():
-                if event.type == VkEventType.MESSAGE_NEW:
-                    print(event.object)
-        except requests.exceptions.ReadTimeout as timeout:
-            continue
 '''
 req_dict = {
         'homework': False,
@@ -332,26 +261,50 @@ def get_timetable(req_data):
     else:
         print('SOME ERROR')  # TODO припилить логи
 
-    def get_db_response(req_dict):
-        if req_dict.get('timetable'):
-            get_timetable(req_dict)
-        elif req_dict.get('homework'):
-            get_homework(req_dict)
-        else:
-            pass  # TODO добавить обработку ошибки
+def get_db_response(req_dict):
+    if req_dict.get('timetable'):
+        get_timetable(req_dict)
+    elif req_dict.get('homework'):
+        get_homework(req_dict)
+    else:
+        pass  # TODO добавить обработку ошибки
 
 
-# if __name__ == '__main__':
-#     req_dict = {
-#         'homework': False,
-#         'timetable': False,
-#         'actual': False,
-#         'week': False,
-#         'date': '25.09.2021',
-#         'tomorrow': False,
-#         'today': False,
-#         'day_of_week': False
-#     }
-#     data = get_homework(req_dict)
-#     with open('eye_of_STAROSTA/data.json', 'w', encoding='utf-8') as file:
-#         json.dump(data, file, indent=4, ensure_ascii=False)
+def group_msg():
+    while True:
+        vk = VkApi(
+            token='b427d2f68643c70505241dbcee1b2366e61eda1d9b6ad68f9bc2af2b31d7d0750775ac83c5a2070c811f1')
+        long_poll = VkBotLongPoll(vk, 186214698)
+        vk_api = vk.get_api()
+        try:
+            for event in long_poll.listen():
+                if event.type == VkBotEventType.MESSAGE_NEW:
+                    try:
+                        msg = event.object['message']['text']
+                        req_data = parse_message(msg)
+                        values = {
+                        'message': str(get_db_response(req_data)),
+                        'peer_id': event.object['message']['peer_id'],
+                        'random_id': random.randint(0, 1024)}
+                        vk.method('messages.send', values=values)
+                    except Exception as e:
+                        print(e)
+        except requests.exceptions.ReadTimeout as timeout:
+            continue
+
+
+if __name__ == '__main__':
+    # req_dict = {
+    #     'homework': False,
+    #     'timetable': False,
+    #     'actual': False,
+    #     'week': False,
+    #     'date': '25.09.2021',
+    #     'tomorrow': False,
+    #     'today': False,
+    #     'day_of_week': False
+    # }
+    # data = get_homework(req_dict)
+    # with open('eye_of_STAROSTA/data.json', 'w', encoding='utf-8') as file:
+    #     json.dump(data, file, indent=4, ensure_ascii=False)
+    group_msg()

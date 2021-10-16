@@ -2,7 +2,7 @@ import re
 import datetime
 homework_list = [
     r'(домашк\D|(^| )дз|домашн\D{2} работ\D|домашнее задание) {,1}.*\?',
-    r'ч(то-то|то|е|ё).+задали', '(дз на)', r'ч(то-то|то|е|ё).+подготовить'
+    r'ч(то-то|то|е|ё).+(задали|делать|подготовить)', '(дз на)',
     r'(cк|к)инь\D{,2}.*(домашк\D|(^| )дз|домашн\D{2} работ\D|'
     r'домашнее задание) {,1}'
 ]
@@ -144,9 +144,3 @@ def parse_message(message):
             return req_dict
     else:
         return None
-
-if __name__ == '__main__':
-    message = input()
-    while message != '0':
-        print(parse_message(message))
-        message = input()
