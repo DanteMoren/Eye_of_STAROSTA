@@ -35,7 +35,7 @@ def get_homework_data(text):
             break
 
     if date and subject_title:
-        if re.search(r'(^\d{2}\.\d{2}\.\d{2}$)', date[0]):
+        if re.search(r'^\d{2}\.\d{2}\.\d{2}$', date[0]):
             date = date[0][:6] + '20' + date[0][6:]
         else:
             date = date[0]

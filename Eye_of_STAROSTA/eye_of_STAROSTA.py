@@ -1,3 +1,4 @@
+from Database.models import Day
 import codecs
 import configparser
 import os
@@ -11,8 +12,6 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
-from Database.models import Day
 
 
 # vk_session = VkApi(token='b427d2f68643c70505241dbcee1b2366e61eda1d9b6ad68f9bc2af2b31d7d0750775ac83c5a2070c811f1')
@@ -105,10 +104,15 @@ req_dict = {
 def day_format(day):
     couples = []
     for couple in day:
+        if couple.homework:
+            homework = True
+        else:
+            homework = False
         couples.append({
             'title': couple.subject_title,
             'type': couple.couple_type,
             'start_time': couple.couple_number.couple_start,
+            'homework': homework,
         })
     return couples
 
@@ -158,13 +162,28 @@ def get_timetable_today():
     return get_timetable_by_date(today)
 
 
+def get_timetable_tomorrow():
+    """
+        function return timetalble for tomorrow
+    """
+    tomorrow = (datetime.datetime.now() +
+                datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
+    return get_timetable_by_date(tomorrow)
+
+
 def get_timetable_by_next_week():
     week_day = (datetime.datetime.now() + datetime.timedelta(days=1))
     while week_day.weekday() != 0:
         week_day += datetime.timedelta(days=1)
     return week_day
 
+
 def get_timetable_by_day_of_week(day_of_week):
+    pass
+
+
+def get_homework(req_data):
     pass
 
 
@@ -185,16 +204,40 @@ def get_timetable(req_data):
         return get_timetable_today()
     elif req_data.get('day_of_week'):
         return get_timetable_by_day_of_week(req_data.get('day_of_week'))
+    elif req_data.get('tommorow'):
+        return get_timetable_tomorrow()
+    elif req_data.get('actual'):
+        day = datetime.datetime.now()
+        for _ in range(4):
+            item = get_timetable_by_date(day)
+            while item[str(day.date())] == []:
+                day += datetime.timedelta(days=1)
+                item = get_timetable_by_date(day)
+            timetable.update(item)
+            day += datetime.timedelta(days=1)
+        return timetable
     else:
         print('SOME ERROR')  # TODO припилить логи
+
+    def get_db_response(req_dict):
+        if req_dict.get('timetable'):
+            get_timetable(req_dict)
+        elif req_dict.get('homework'):
+            get_homework(req_dict)
+        else:
+            pass  # TODO добавить обработку ошибки
 
 
 if __name__ == '__main__':
     req_dict = {
-        'week': 0,
-        'date': '12.10.2021',
-        'today': 0,
-        'day_of_week': 0
+        'homework': False,
+        'timetable': False,
+        'actual': True,
+        'week': False,
+        'date': False,
+        'tomorrow': False,
+        'today': False,
+        'day_of_week': False
     }
     data = get_timetable(req_dict)
     with open('eye_of_STAROSTA/data.json', 'w', encoding='utf-8') as file:

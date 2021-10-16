@@ -1,24 +1,100 @@
 {
-    "2021-10-12": [
+    "2021-10-16": [
+        {
+            "title": "Экономика",
+            "type": "ПЗ",
+            "start_time": "09:00",
+            "homework": true
+        },
+        {
+            "title": "Экономика",
+            "type": "ЛК",
+            "start_time": "13:00",
+            "homework": false
+        },
+        {
+            "title": "Вычислительная математика",
+            "type": "ЛК",
+            "start_time": "14:45",
+            "homework": false
+        }
+    ],
+    "2021-10-18": [
+        {
+            "title": "Обработка экспериментальных данных на ЭВМ\n\t\t\t\t\t\t\t\t | \t\t\t\t\t\t\t\tМатематическое программирование",
+            "type": "ЛК",
+            "start_time": "09:00",
+            "homework": false
+        },
+        {
+            "title": "Теория игр и методы принятия решений",
+            "type": "ЛК",
+            "start_time": "10:45",
+            "homework": false
+        },
+        {
+            "title": "Аналитическое моделирование",
+            "type": "ЛК",
+            "start_time": "13:00",
+            "homework": false
+        },
+        {
+            "title": "Физическая культура",
+            "type": "ПЗ",
+            "start_time": "14:45",
+            "homework": false
+        }
+    ],
+    "2021-10-19": [
         {
             "title": "Военная подготовка",
             "type": "ЛК",
-            "start_time": "09:00"
+            "start_time": "09:00",
+            "homework": false
         },
         {
             "title": "Военная подготовка",
             "type": "ЛК",
-            "start_time": "10:45"
+            "start_time": "10:45",
+            "homework": false
         },
         {
             "title": "Военная подготовка",
             "type": "ЛК",
-            "start_time": "13:00"
+            "start_time": "13:00",
+            "homework": false
         },
         {
             "title": "Военная подготовка",
             "type": "ЛК",
-            "start_time": "14:45"
+            "start_time": "14:45",
+            "homework": false
+        }
+    ],
+    "2021-10-20": [
+        {
+            "title": "Физическая культура (спортивные секции)",
+            "type": "ПЗ",
+            "start_time": "10:45",
+            "homework": false
+        },
+        {
+            "title": "Теория игр и методы принятия решений",
+            "type": "ПЗ",
+            "start_time": "13:00",
+            "homework": false
+        },
+        {
+            "title": "Иностранный язык",
+            "type": "ПЗ",
+            "start_time": "14:45",
+            "homework": false
+        },
+        {
+            "title": "Социология",
+            "type": "ЛК",
+            "start_time": "16:30",
+            "homework": false
         }
     ]
 }
