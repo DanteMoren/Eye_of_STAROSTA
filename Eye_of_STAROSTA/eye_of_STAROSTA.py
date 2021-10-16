@@ -5,10 +5,14 @@ import random
 import datetime
 import sys
 import json
+import requests
 from peewee import *
 from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
+ 
+from vk_api.bot_longpoll import VkBotLongPoll
+from vk_api.bot_longpoll import VkBotEventType
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -90,12 +94,29 @@ def send_message(vk_session, id_type, id, message=None, attachment=None, keyboar
 #                 if msg == "привет":
 #                     send_message(vk_session, 'chat_id',
 #                                 event.chat_id, message='Привет!')
+
+def group_msg():
+    while True:
+        vk = VkApi(token='b427d2f68643c70505241dbcee1b2366e61eda1d9b6ad68f9bc2af2b31d7d0750775ac83c5a2070c811f1')
+        long_poll = VkBotLongPoll(vk, 186214698)
+        vk_api = vk.get_api()
+        try:    
+            for event in long_poll.listen():
+                if event.type == VkEventType.MESSAGE_NEW:
+                    print(event.object)
+        except requests.exceptions.ReadTimeout as timeout:
+            continue
 '''
 req_dict = {
-    'week': False or 'now' or 'next',
-    'date': False or '25.09.21 etc.',
-    'today': False or True
-}
+        'homework': False,
+        'timetable': False,
+        'actual': False,
+        'week': False,
+        'date': '25.09.2021',
+        'tomorrow': False,
+        'today': False,
+        'day_of_week': False
+    }
 '''
 
 
@@ -320,17 +341,17 @@ def get_timetable(req_data):
             pass  # TODO добавить обработку ошибки
 
 
-if __name__ == '__main__':
-    req_dict = {
-        'homework': False,
-        'timetable': False,
-        'actual': False,
-        'week': False,
-        'date': '25.09.2021',
-        'tomorrow': False,
-        'today': False,
-        'day_of_week': False
-    }
-    data = get_homework(req_dict)
-    with open('eye_of_STAROSTA/data.json', 'w', encoding='utf-8') as file:
-        json.dump(data, file, indent=4, ensure_ascii=False)
+# if __name__ == '__main__':
+#     req_dict = {
+#         'homework': False,
+#         'timetable': False,
+#         'actual': False,
+#         'week': False,
+#         'date': '25.09.2021',
+#         'tomorrow': False,
+#         'today': False,
+#         'day_of_week': False
+#     }
+#     data = get_homework(req_dict)
+#     with open('eye_of_STAROSTA/data.json', 'w', encoding='utf-8') as file:
+#         json.dump(data, file, indent=4, ensure_ascii=False)
