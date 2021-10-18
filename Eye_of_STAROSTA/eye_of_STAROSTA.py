@@ -263,9 +263,9 @@ def get_timetable(req_data):
 
 def get_db_response(req_dict):
     if req_dict.get('timetable'):
-        get_timetable(req_dict)
+        return get_timetable(req_dict)
     elif req_dict.get('homework'):
-        get_homework(req_dict)
+        return get_homework(req_dict)
     else:
         pass  # TODO добавить обработку ошибки
 
@@ -282,8 +282,9 @@ def group_msg():
                     try:
                         msg = event.object['message']['text']
                         req_data = parse_message(msg)
+                        answer = get_db_response(req_data)
                         values = {
-                        'message': str(get_db_response(req_data)),
+                        'message': str(answer),
                         'peer_id': event.object['message']['peer_id'],
                         'random_id': random.randint(0, 1024)}
                         vk.method('messages.send', values=values)
@@ -297,14 +298,15 @@ if __name__ == '__main__':
     # req_dict = {
     #     'homework': False,
     #     'timetable': False,
-    #     'actual': False,
+    #     'actual': True,
     #     'week': False,
-    #     'date': '25.09.2021',
+    #     'date': False,
     #     'tomorrow': False,
     #     'today': False,
     #     'day_of_week': False
     # }
-    # data = get_homework(req_dict)
+    # data = get_timetable(req_dict)
+    # print(data)
     # with open('eye_of_STAROSTA/data.json', 'w', encoding='utf-8') as file:
     #     json.dump(data, file, indent=4, ensure_ascii=False)
     group_msg()
