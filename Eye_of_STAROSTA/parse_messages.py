@@ -6,7 +6,7 @@ homework_list = [
     r'(cк|к)инь\D{,2}.*(домашк\D|(^| )дз|домашн\D{2} работ\D|'
     r'домашнее задание) {,1}'
 ]
-
+# TODO где пара - расписание на сегодня, че 
 timetable_list = [
     r'(как(ая|ие)|где) пар[аы]', 'что сейчас', 'расписание',
     r'ч(то|е|ё).*завтра.*\?', r'ч(то|е|ё).*по парам', 'че завтра']
@@ -72,7 +72,6 @@ def date(message):
     for date in date_list:
         result = re.search(date, message)
         if result:
-            print(result[0])
             if re.search(r'^\d{2}\.\d{2}\.\d{2}$', result[0]):
                 result = result[0][:6] + '20' + result[0][6:]
                 return result

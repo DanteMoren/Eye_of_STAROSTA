@@ -66,7 +66,6 @@ def parse_homework():
     }
 
     url = 'https://api.vk.com/method/wall.get'
-
     params = {
         'access_token': VK_ACCESS_TOKEN,
         'v': VK_API_VERSION,
@@ -77,7 +76,7 @@ def parse_homework():
     if req.status_code != 200:
         print('ОНО НАЕБНУЛОСЬ')  # TODO сделать ошибку
         return
-
+    # TODO сделать ошибку, req.json()['error'] или что-то такое, когда сломан токен
     posts = req.json()['response']['items'][1:10]
 
     homework = []

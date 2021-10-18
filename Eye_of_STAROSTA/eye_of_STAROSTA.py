@@ -30,9 +30,26 @@ db_dir = config.get('database', 'dir')
 db = SqliteDatabase(db_dir)
 
 
-# def send_message(vk_session, id_type, id, message=None, attachment=None, keyboard=None):
-#     vk_session.method('messages.send', {id_type: id, 'message': message, 'random_id': random.randint(
-#         -2147483648, +2147483648), "attachment": attachment, 'keyboard': keyboard})
+emojies = {
+    'Физическая культура (спортивные секции)': '💪Физическая культура (спортивные секции)',
+    'Иностранный язык': '🏳️‍🌈Иностранный язык',
+    'Архитектуры вычислительных систем': '🛌Архитектуры вычислительных систем',
+    'Основы психологии': '🧐Основы психологии',
+    'Конструирование программного обеспечения': '👴Конструирование программного обеспечения',
+    'Экономика': '📈Экономика',
+    'Математическое программирование': '😴Математическое программирование',
+    'Теория игр и методы принятия решений': '👾Теория игр и методы принятия решений',
+    'Аналитическое моделирование': '⚽Аналитическое моделирование',
+    'Физическая культура': '💪Физическая культура',
+    'Военная подготовка': '🌈Военная подготовка',
+    'Основы психологии': '🧐Основы психологии',
+    'Вычислительная математика': '💻Вычислительная математика',
+    'Социология': '🤡Социология',
+    'Обработка экспериментальных данных на ЭВМ или Математическое программирование':'👨‍🔧Обработка экспериментальных данных на ЭВМ или 😴Математическое программирование',
+    'Конструирование программного обеспечения': '👴Конструирование программного обеспечения',
+    'Обработка экспериментальных данных на ЭВМ': '👨‍🔧Обработка экспериментальных данных на ЭВМ',
+}
+
 
 
 '''
@@ -59,6 +76,7 @@ def day_format(day):
         couples.append({
             'title': couple.subject_title,
             'type': couple.couple_type,
+            'weekday': couple.day_of_week,
             'start_time': couple.couple_number.couple_start,
             'homework': homework,
         })
@@ -102,7 +120,7 @@ def convert_date(date):
             return date
     if type(date) == datetime.datetime:
         return date.date()
-    print('SOME ERROR')  # TODO припилить логи
+    print('SOME ERROR CONVERWT')  # TODO припилить логи
 
 
 def get_timetable_by_date(date):
@@ -213,20 +231,22 @@ def get_homework(req_data):
         return get_homework_today()
     elif req_data.get('day_of_week'):
         return get_homework_by_day_of_week(req_data.get('day_of_week'))
-    elif req_data.get('tommorow'):
+    elif req_data.get('tomorrow'):
         return get_homework_tomorrow()
     elif req_data.get('actual'):
         day = datetime.datetime.now()
-        for _ in range(4):
+        for _ in range(8):
             item = get_homework_by_date(day)
-            while item[str(day.date())] == []:
+            iterations = 0
+            while item[str(day.date())] == [] and iterations != 5:
                 day += datetime.timedelta(days=1)
                 item = get_homework_by_date(day)
+                iterations +=1
             homework.update(item)
             day += datetime.timedelta(days=1)
         return homework
     else:
-        print('SOME ERROR')  # TODO припилить логи
+        print('SOME ERROR GET HOMEWORK')  # TODO припилить логи
 
 
 def get_timetable(req_data):
@@ -246,7 +266,7 @@ def get_timetable(req_data):
         return get_timetable_today()
     elif req_data.get('day_of_week'):
         return get_timetable_by_day_of_week(req_data.get('day_of_week'))
-    elif req_data.get('tommorow'):
+    elif req_data.get('tomorrow'):
         return get_timetable_tomorrow()
     elif req_data.get('actual'):
         day = datetime.datetime.now()
@@ -259,21 +279,68 @@ def get_timetable(req_data):
             day += datetime.timedelta(days=1)
         return timetable
     else:
-        print('SOME ERROR')  # TODO припилить логи
+        print('SOME ERROR GET TIMETABLE')  # TODO припилить логи
 
 def get_db_response(req_dict):
-    if req_dict.get('timetable'):
-        return get_timetable(req_dict)
-    elif req_dict.get('homework'):
-        return get_homework(req_dict)
+    if req_dict is not None:
+        if req_dict.get('timetable'):
+            return get_timetable(req_dict)
+        elif req_dict.get('homework'):
+            return get_homework(req_dict)
+
+
+def compare_answer(answer, req_dict):
+    compared_answer = ''
+    if req_dict['timetable']:
+        for date in answer:
+            if answer[date] == []:
+                continue
+            data = answer[date]
+            compared_answer += (f'\n\t📅{date}, {answer[date][0]["weekday"]}\n\n')
+            for couple in data:
+                if couple["type"] == 'ЛР':
+                    compared_answer += (
+                        f'\t{emojies[couple["title"]]}, ❗ЛР❗ - начинается в '
+                        f'{couple["start_time"]}')
+                else:
+                    compared_answer += (
+                        f'\t{emojies[couple["title"]]}, {couple["type"]} - начинается в ' 
+                        f'{couple["start_time"]}')
+                if couple["homework"]:
+                    compared_answer += ' есть домашнее задание❗'
+                compared_answer += '\n'
+    elif req_dict['homework']:
+        for date in answer:
+            if answer[date] == []:
+                continue
+            data = answer[date]
+            compared_answer += (f'\n\t📅{date} \n\n')
+            for couple in data:
+                files = [file['link'] for file in couple['files']]
+                compared_answer += (
+                    f'\t{emojies[couple["title"]]}, {couple["type"]}:\n' 
+                    f'{couple["homework"]}\n\n')
+                if files != []:
+                    compared_answer += (f'Прикрепленные файлы: {files}')
+        if compared_answer == '':
+            return 'Ну, лично я вообще понятия не имею что там задали. По такому-то запросу🙄'
+        
+    
     else:
-        pass  # TODO добавить обработку ошибки
+        pass # TODO написать ошибку
+    if compared_answer == '':
+        return 'Слушай, чет пошло не по плану. Наташа! Мы все уронили!'
+    return compared_answer
 
-
+"""
+def attachment_init(attach):
+    pass
+    return 
+    
+"""
 def group_msg():
     while True:
-        vk = VkApi(
-            token='b427d2f68643c70505241dbcee1b2366e61eda1d9b6ad68f9bc2af2b31d7d0750775ac83c5a2070c811f1')
+        vk = VkApi(token='b427d2f68643c70505241dbcee1b2366e61eda1d9b6ad68f9bc2af2b31d7d0750775ac83c5a2070c811f1')
         long_poll = VkBotLongPoll(vk, 186214698)
         vk_api = vk.get_api()
         try:
@@ -281,13 +348,16 @@ def group_msg():
                 if event.type == VkBotEventType.MESSAGE_NEW:
                     try:
                         msg = event.object['message']['text']
-                        req_data = parse_message(msg)
-                        answer = get_db_response(req_data)
-                        values = {
-                        'message': str(answer),
-                        'peer_id': event.object['message']['peer_id'],
-                        'random_id': random.randint(0, 1024)}
-                        vk.method('messages.send', values=values)
+                        req_dict = parse_message(msg)
+                        if req_dict is not None:
+                            answer = (get_db_response(req_dict))
+                            message = str(compare_answer(answer, req_dict))
+                            values = {
+                            'message': message,
+                            'peer_id': event.object['message']['peer_id'],
+                            'random_id': random.randint(0, 1024)}
+                            # 'attachment': f'photo{owner_id}_{photo_id}_{access_key}'
+                            vk.method('messages.send', values=values)
                     except Exception as e:
                         print(e)
         except requests.exceptions.ReadTimeout as timeout:
@@ -297,16 +367,16 @@ def group_msg():
 if __name__ == '__main__':
     # req_dict = {
     #     'homework': False,
-    #     'timetable': False,
-    #     'actual': True,
+    #     'timetable': True,
+    #     'actual': False,
     #     'week': False,
-    #     'date': False,
+    #     'date': '10.02.2021',
     #     'tomorrow': False,
     #     'today': False,
     #     'day_of_week': False
-    # }
-    # data = get_timetable(req_dict)
-    # print(data)
+    # } 
+    # data = get_db_response(req_dict)
+    # print(compare_answer(data, req_dict))
     # with open('eye_of_STAROSTA/data.json', 'w', encoding='utf-8') as file:
     #     json.dump(data, file, indent=4, ensure_ascii=False)
     group_msg()

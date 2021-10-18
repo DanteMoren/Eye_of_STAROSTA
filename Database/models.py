@@ -224,7 +224,34 @@ def add_day(data):
     except Exception as e:
         print(e)
 
-# ! TODO понять как обновлять эту хуйню
+
+def add_file(file_name, link, verbose_name=None, homework_date=None, subject_title=None, couple_type=None):
+    homework_date = convert_date(homework_date)
+    try:
+        file = File.get_or_create(
+            file_name=file_name,
+            link=link
+        )
+        if verbose_name is None:
+            verbose_name = file[0].verbose_name
+        if homework_date is None:
+            homework_date = file[0].homework_date
+        if subject_title is None:
+            subject_title = file[0].subject_title
+        if couple_type is None:
+            couple_type = file[0].couple_type
+        updated_file = File.update(
+            verbose_name=verbose_name,
+            homework_date=homework_date,
+            subject_title=subject_title,
+            couple_type=couple_type
+        ).where(File.file_name == file_name, File.link == link)
+        updated_file.execute()
+        file = File.get(File.file_name == file_name, File.link == link)
+
+        return file
+    except Exception as e:
+        print('file already exist')
 
 
 def add_homework(data):
@@ -270,35 +297,6 @@ def add_homework(data):
             )
     except Exception as e:
         print(e)
-
-
-def add_file(file_name, link, verbose_name=None, homework_date=None, subject_title=None, couple_type=None):
-    homework_date = convert_date(homework_date)
-    try:
-        file = File.get_or_create(
-            file_name=file_name,
-            link=link
-        )
-        if verbose_name is None:
-            verbose_name = file[0].verbose_name
-        if homework_date is None:
-            homework_date = file[0].homework_date
-        if subject_title is None:
-            subject_title = file[0].subject_title
-        if couple_type is None:
-            couple_type = file[0].couple_type
-        updated_file = File.update(
-            verbose_name=verbose_name,
-            homework_date=homework_date,
-            subject_title=subject_title,
-            couple_type=couple_type
-        ).where(File.file_name == file_name, File.link == link)
-        updated_file.execute()
-        file = File.get(File.file_name == file_name, File.link == link)
-
-        return file
-    except Exception as e:
-        print('www')
 
 
 if __name__ == '__main__':
