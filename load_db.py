@@ -2,7 +2,7 @@ import sys
 import os
 import json
 
-sys.path.insert(0, "/opt/database")
+sys.path.insert(0, "./database")
 from models import *
 
 from parse_timetable.parse_timetable import add_timetable_to_db
@@ -24,7 +24,7 @@ if __name__ == '__main__':
             couple_end=end_time
         )
     
-    with open('parse_timetable/timetable.json', 'r', encoding='utf-8') as file:
+    with open('./parse_timetable/timetable.json', 'r', encoding='utf-8') as file:
         timetable_data = json.load(file)
     add_timetable_to_db(timetable_data)
 
