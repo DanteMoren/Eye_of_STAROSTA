@@ -17,7 +17,7 @@ from vk_api.vk_api import VkApiMethod
 
 from parse_messages import parse_message
 
-sys.path.insert(0, "/opt/database")
+sys.path.insert(0, "./database")
 
 from models import Day, File
 
