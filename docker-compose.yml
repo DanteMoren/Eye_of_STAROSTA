@@ -13,5 +13,5 @@ services:
     volumes:
       - ./config.cfg:./config.cfg
       - ./opt:./opt
-    restarts: "always"
+    restart: "always"
     container_name: "vkbot"
