@@ -8,7 +8,7 @@ import sys
 from fake_useragent import UserAgent
 from dotenv import load_dotenv
 
-sys.path.insert(0, "/opt/database")
+sys.path.insert(0, "/opt/Eye_of_STAROSTA/database")
 
 from models import add_homework
 
