@@ -131,6 +131,7 @@ def get_timetable_by_date(date):
     """
     date = convert_date(date)
     day = Day.select().where(Day.date == date)
+    date = date.strftime('%d.%m.%Y')
     return {str(date): day_format(day)}
 
 
@@ -142,6 +143,7 @@ def get_homework_by_date(date):
     """
     date = convert_date(date)
     homework = Day.select().where(Day.date == date, Day.homework != None)
+    date = date.strftime('%d.%m.%Y')
     return {str(date): homework_format(homework)}
 
 
@@ -238,8 +240,10 @@ def get_homework(req_data):
         for _ in range(8):
             item = get_homework_by_date(day)
             iterations = 0
-            while item[str(day.date())] == [] and iterations != 5:
+            date = day.date().strftime('%d.%m.%Y')
+            while item[date] == [] and iterations != 5:
                 day += datetime.timedelta(days=1)
+                date = day.date().strftime('%d.%m.%Y')
                 item = get_homework_by_date(day)
                 iterations +=1
             homework.update(item)
@@ -272,8 +276,10 @@ def get_timetable(req_data):
         day = datetime.datetime.now()
         for _ in range(4):
             item = get_timetable_by_date(day)
-            while item[str(day.date())] == []:
+            date = day.date().strftime('%d.%m.%Y')
+            while item[date] == []:
                 day += datetime.timedelta(days=1)
+                date = day.date().strftime('%d.%m.%Y')
                 item = get_timetable_by_date(day)
             timetable.update(item)
             day += datetime.timedelta(days=1)
@@ -366,16 +372,17 @@ def group_msg():
 
 if __name__ == '__main__':
     # req_dict = {
-    #     'homework': False,
-    #     'timetable': True,
-    #     'actual': False,
+    #     'homework': True,
+    #     'timetable': False,
+    #     'actual': True,
     #     'week': False,
-    #     'date': '10.02.2021',
+    #     'date': False,
     #     'tomorrow': False,
     #     'today': False,
     #     'day_of_week': False
     # } 
     # data = get_db_response(req_dict)
+    # print(data)
     # print(compare_answer(data, req_dict))
     # with open('eye_of_STAROSTA/data.json', 'w', encoding='utf-8') as file:
     #     json.dump(data, file, indent=4, ensure_ascii=False)
