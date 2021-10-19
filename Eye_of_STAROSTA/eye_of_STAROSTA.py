@@ -5,6 +5,7 @@ import random
 import datetime
 import sys
 import json
+import syslog
 import requests
 from peewee import *
 from vk_api import VkApi
@@ -120,7 +121,7 @@ def convert_date(date):
             return date
     if type(date) == datetime.datetime:
         return date.date()
-    print('SOME ERROR CONVERWT')  # TODO припилить логи
+    syslog.syslog('SOME ERROR CONVERWT')  # TODO припилить логи
 
 
 def get_timetable_by_date(date):
@@ -246,7 +247,7 @@ def get_homework(req_data):
             day += datetime.timedelta(days=1)
         return homework
     else:
-        print('SOME ERROR GET HOMEWORK')  # TODO припилить логи
+        syslog.syslog('SOME ERROR GET HOMEWORK')  # TODO припилить логи
 
 
 def get_timetable(req_data):
@@ -279,7 +280,7 @@ def get_timetable(req_data):
             day += datetime.timedelta(days=1)
         return timetable
     else:
-        print('SOME ERROR GET TIMETABLE')  # TODO припилить логи
+        syslog.syslog('SOME ERROR GET TIMETABLE')  # TODO припилить логи
 
 def get_db_response(req_dict):
     if req_dict is not None:
@@ -329,6 +330,7 @@ def compare_answer(answer, req_dict):
     else:
         pass # TODO написать ошибку
     if compared_answer == '':
+        syslog.syslog('Ответ не найден')
         return 'Слушай, чет пошло не по плану. Наташа! Мы все уронили!'
     return compared_answer
 
@@ -346,6 +348,7 @@ def group_msg():
         try:
             for event in long_poll.listen():
                 if event.type == VkBotEventType.MESSAGE_NEW:
+                    syslog.syslog(event.object)
                     try:
                         msg = event.object['message']['text']
                         req_dict = parse_message(msg)
@@ -359,7 +362,7 @@ def group_msg():
                             # 'attachment': f'photo{owner_id}_{photo_id}_{access_key}'
                             vk.method('messages.send', values=values)
                     except Exception as e:
-                        print(e)
+                        syslog.syslog(e)
         except requests.exceptions.ReadTimeout as timeout:
             continue
 
