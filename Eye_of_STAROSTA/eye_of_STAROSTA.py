@@ -17,9 +17,9 @@ from vk_api.vk_api import VkApiMethod
 
 from parse_messages import parse_message
 
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, "/opt/database")
 
-from Database.models import Day, File
+from models import Day, File
 
 
 config = configparser.RawConfigParser()

@@ -8,9 +8,9 @@ import json
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, "/opt/database")
 
-from Database.models import add_day
+from models import add_day
 
 
 def parse_timetable():

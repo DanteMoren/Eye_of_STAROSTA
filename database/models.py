@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from re import sub
 from peewee import *
 import configparser
@@ -132,7 +133,7 @@ def convert_date(date):
             return date
     if type(date) == datetime.datetime:
         return date.date()
-    print('SOME ERROR')  # TODO припилить логи
+    print("SOME ERROR")
 
 
 def create_or_update_subject(title, type, teacher=None, location=None):
