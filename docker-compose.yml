@@ -11,7 +11,7 @@ services:
       - "VK_ACCESS_TOKEN=00983e87c89fed5ab64d02aa1aad22044ab9626a09bdd0cabb5b13c4e195392d838026297b262cf715ae9"
       - "VK_ACCESS_KEY=b427d2f68643c70505241dbcee1b2366e61eda1d9b6ad68f9bc2af2b31d7d0750775ac83c5a2070c811f1"
     volumes:
-      - ./config.cfg:./config.cfg
-      - ./opt:./opt
+      - ./config.cfg:/config.cfg
+      - ./opt:/opt
     restart: "always"
     container_name: "vkbot_ver1.0"
