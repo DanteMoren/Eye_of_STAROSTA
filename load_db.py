@@ -2,9 +2,9 @@ import sys
 import os
 import json
 
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, "/opt/database")
+from models import *
 
-from Database.models import *
 from parse_timetable.parse_timetable import add_timetable_to_db
 from parse_homework.parse_homework import parse_homework
 

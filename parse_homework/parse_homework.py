@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import configparser
 import os
 import requests
@@ -7,9 +8,9 @@ import sys
 from fake_useragent import UserAgent
 from dotenv import load_dotenv
 
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, "/opt/database")
 
-from Database.models import add_homework
+from models import add_homework
 
 subject_title_list = [
     'Иностранный_язык', 'Архитектуры_вычислительных_систем',
