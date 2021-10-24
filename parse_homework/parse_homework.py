@@ -75,7 +75,7 @@ def parse_homework():
 
     req = requests.get(url, headers=headers, params=params)
     if req.status_code != 200:
-        print('ОНО НАЕБНУЛОСЬ')  # TODO сделать ошибку
+        print('оно сломалось')  # TODO сделать ошибку
         return
     # TODO сделать ошибку, req.json()['error'] или что-то такое, когда сломан токен
     posts = req.json()['response']['items'][1:10]
